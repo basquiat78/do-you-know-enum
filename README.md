@@ -146,7 +146,7 @@ public enum SecondEnum {
 	/** enum index */
 	public int index;
 	
-	/** String, init type constructor */
+	/** String, int type constructor */
 	SecondEnum(String code, int index) {
 		this.code = code;
 		this.index = index;
@@ -207,7 +207,7 @@ public enum SecondEnum {
 	/** enum index */
 	public int index;
 	
-	/** String, init type constructor */
+	/** String, int type constructor */
 	SecondEnum(String code, int index) {
 		this.code = code;
 		this.index = index;
@@ -396,7 +396,7 @@ public enum ThirdEnum {
 	/**
 	 * get Enum Object from code
 	 * @param code
-	 * @return SecondEnum
+	 * @return ThirdEnum
 	 */
 	public static ThirdEnum fromString(String code) {
 		return Arrays.asList(ThirdEnum.values())
