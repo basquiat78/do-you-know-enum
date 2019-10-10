@@ -4,8 +4,10 @@ import java.util.Arrays;
 
 /**
  * 
+ * 
  * 마치 클래스처럼
  * created by basquiat
+ *
  *
  */
 public enum SecondEnum {

@@ -6,8 +6,10 @@ import java.math.BigDecimal;;
 
 /**
  * 
+ * 
  * java8을 최대한 활용해 보자
  * created by basquiat
+ *
  *
  */
 public enum ThirdEnum {

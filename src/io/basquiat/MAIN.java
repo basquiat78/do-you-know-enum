@@ -40,7 +40,6 @@ public class MAIN {
 		System.out.println(SecondEnum.fromString("one"));
 		 */
 		
-		
 		BigDecimal gold = BigDecimal.valueOf(100);
 		System.out.println(ThirdEnum.LEVEL_ONE.rewardGold(gold));
 		System.out.println(ThirdEnum.fromString("one").rewardGold(gold));
