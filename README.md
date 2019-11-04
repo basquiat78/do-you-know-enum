@@ -1,5 +1,5 @@
 # do-you-know-enum
-java8, function, express, enum
+java8, functional interface, lambda, enum
 
 
 # 처음 ENUM을 알다.
