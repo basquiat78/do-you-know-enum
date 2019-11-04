@@ -12,11 +12,11 @@ import java.util.Arrays;
  */
 public enum SecondEnum {
 	
-	LEVEL_ONE("one", 1),
+	LEVEL_ONE("one", 0),
 	
-	LEVEL_TWO("two", 2),
+	LEVEL_TWO("two", 1),
 	
-	LEVEL_THREE("three", 3);
+	LEVEL_THREE("three", 2);
 	
 	/** enum code */
 	public String code;

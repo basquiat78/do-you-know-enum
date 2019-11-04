@@ -6,7 +6,7 @@ java8, function, express, enum
 
 아마도 신입시절이었던거 같다. 당시 같이 일하던 나이는 어렸지만 형, 동생 하던 나의 선임이 카테고리 코드를 디비로 관리하던 것을 enum이라는 클래스로 관리하기 위해 리팩토링 하던 시절이었다.
 
-그 때 그 친구가 했던 말은 굳이 이런 것들을 DB에 관리하기엔 리소스가 크고 enum이라는 녀석을 이용해 관리 할 수 있다는 것을 알려줬다.
+그 때 그 친구가 했던 말은 굳이 이런 것들을 DB에 관리하기엔 리소스가 크고 enum이라는 녀석을 이용해 코드 레벨에서 관리 할 수 있다는 것을 알려줬다.
 
 # 기본적인 ENUM을 사용하다.
 
@@ -111,6 +111,8 @@ public class MAIN {
 
 일반적인 if문보다는 좀 더 제한적이고 엄격하게 사용할 수 있다는 것이다. (if처럼 무한대로 else if가 불가능하다.)
 
+물론 enum에 정의한 값이 많아지면 이것도 결국 무의미하겠지만...
+
 어째든 이것만으로는 뭔가 부족하다.
 
 enum이 상수의 열거형이라고 하지만 엄밀히 말하면 클래스라는 것이다.
@@ -119,7 +121,9 @@ enum이 상수의 열거형이라고 하지만 엄밀히 말하면 클래스라�
 
 # 마치 클래스처럼 
 
-기존에는 name()와 ordinal()함수를 통해서 스트링 타입의 코드명과 인트 타입의 인덱스를 가져왔다. 하지만 이것은 사용하는데 있어서 뭔가 명확성이 좀 떨어진다.
+기존에는 name()와 ordinal()함수를 통해서 스트링 타입의 코드명과 인트 타입의 인덱스를 가져왔다. 
+
+하지만 이것은 사용하는데 있어서 뭔가 명확성이 좀 떨어진다.
 
 그래서 마치 클래스처럼 생성자와 열거형에 각 각의 타입을 명시적으로 작성해서 명확하게 사용하기 시작했다.
 
@@ -134,11 +138,11 @@ package io.basquiat;
  */
 public enum SecondEnum {
 	
-	LEVEL_ONE("one", 1),
+	LEVEL_ONE("one", 0),
 	
-	LEVEL_TWO("two", 2),
+	LEVEL_TWO("two", 1),
 	
-	LEVEL_THREE("three", 3);
+	LEVEL_THREE("three", 2);
 	
 	/** enum code */
 	public String code;
@@ -176,9 +180,9 @@ public class MAIN {
 
 ```
 
-사용하는데 있어서 뭔가 좀 더 명확하게 변수를 통해서 값을 가져올 수 있게 되었다.
+사용하는데 있어서 변수명을 이용해 명확하게 어떤 값을 가져오는 지 알 수 있게 되었다.
 
-여기에서 스트링 타입의 코드 값으로 enum 객체를 가져오고 싶은 경우가 발생하기도 한다.
+여기에서 스트링 타입의 코드 값으로 enum을 가져오고 싶은 경우가 발생하기도 한다.
 
 그래서 다음과 같이 values()함수를 이용해서 넘겨받은 코드값으로 해당 객체를 가져오는 코드를 추가 했다.
 
@@ -233,8 +237,7 @@ public enum SecondEnum {
 
 다음과 같이 사용할 수 있다.
 
-값을 꺼내오는데 있어서 code, index라는 변수명을 통해서 가져오기 때문에 좀 더 명확하게 사용할 수 있다.
-
+코드값으로 enum을 가져온다.
 
 ```
 
@@ -270,6 +273,8 @@ Function<T,R> 	|   (T) -> R 			 |  R apply(T t)
 
 이 부분은 자바8에 대한 내용이기에 java8의 대표적인 9개 functional interface는 알고 가는 것이 좋다.
 
+[Functional Interfaces in Java 8](https://www.baeldung.com/java-8-functional-interfaces)
+
 뿐만 아니라 기본적인 자바8의 람다 표현식도 당연히 알아야 한다.
 
 이제부터 무엇을 하고 싶은 건지 궁금할 수도 있고 아닐 수도 있지만 최종 목표는 enum을 통해서 캡슐화를 하는 데에 의의를 두고 싶다.
@@ -278,23 +283,25 @@ Function<T,R> 	|   (T) -> R 			 |  R apply(T t)
 
 ## 시나리오 
 
-이것은 JPA와도 상당히 궁합이 잘 맞는다. 예를 들면 
-
-엔티티를 정의할 때 @Enumerated(EnumType.ORDINAL), @Enumerated(EnumType.STRING)을 사용할 수도 있다.
-
-어찌되었든 위에 만든 SecondEnum을 기준으로 이야기를 해보자.
+위에 만든 SecondEnum을 기준으로 이야기를 해보자.
 
 가령 레벨에 따른 보상을 구현하고자 한다.
 
-1. DB또는 무엇이 되었든 각 레벨에 도달하게 되면 현재 어떤 유저가 가지고 있는 골드에 대한 특정 배수만큼 곱한 골드를 지급한다.
+1. DB또는 무엇이 되었든 특정 퀘스트를 완료하게 되 현재 어떤 게임 유저의 레벨과 가지고 있는 골드에 대한 특정 배수만큼 곱한 골드를 지급한다.
 
 
 ## 전통적인 방식
 
 ```
+	// 햔제 유저가 소지한 골
 	int userGold = 1000;
+	
+	// 보상 골드 초
 	int rewardGold = 0;
+	
+	// 현재 유저의 레벨
 	SecondEnum level = SecondEnum.LEVEL_ONE;
+	
 	switch(level) {
 		case LEVEL_ONE:
 			rewardGold = userGold * 2;
@@ -315,18 +322,61 @@ Function<T,R> 	|   (T) -> R 			 |  R apply(T t)
 	
 	}
 	
-	// 유저가 가진 골드에 따라서 도달한 레벨에 따른 보상 골드를 받는다.
+	// 유저가 가진 골드와 레벨에 따라서 특정 퀘스트에 따른 보상 골드를 받는다.
 	System.out.println(rewardGold);
 
 ```
 
-위와 같은 방식으로 레벨에 따른 보상금을 지원한다든 유틸같은 것을 통해서 계산하는 메소드를 생성해서 사용하게 될 것이다.
+위와 같은 방식으로 특정 퀘스트 완료에 따른 보상금을 지원한다든 유틸같은 것을 통해서 계산하는 메소드를 생성해서 사용하게 될 것이다.
 
-하지만 위와 같은 방식은 좀 번거롭다. 기존의 로직에 if문 또는 case를 확장하면 되지만 귀찮다.
+예를 들면 다음과 같이 CommonUtils같은 곳에 계산을 하는 로직을 만들 수 도 있다.
 
-그러면 enum을 활용해 어떻게 이것을 처리할 것인가??
+아니면 if문으로 처리한다던가?
 
-그리고 위에서 왜 java8의 functional interface를 언급했는지도 궁금해 할 수도 있다. (아닐 수도 있다.)
+```
+
+public class CommonUtils {
+
+	/**
+	 * reward gold
+	 * 
+	 * @param userGold (유저가 소지한 골드)
+	 * @param level (유저의 레벨)
+	 * @throws JsonProcessingException
+	 */
+	public static int rewardGold(int userGold, Level level ) {
+		int rewardGold = 0;
+		switch(level) {
+			case LEVEL_ONE:
+				rewardGold = userGold * 2;
+				System.out.println("level 1");
+				break;
+			case LEVEL_TWO:
+				rewardGold = userGold * 3;
+				System.out.println("level 2");
+				break;
+			case LEVEL_THREE:
+				rewardGold = basicGold * 4;
+				System.out.println("level 3");
+				break;
+			default:
+				rewardGold = userGold;
+				System.out.println("nothing");
+				break;
+		
+		}
+		return rewardGold;
+	}
+
+}
+
+```
+
+하지만 위와 같은 방식은 좀 번거롭다. 만일 등급이 늘어나게 되면 기존의 로직에 if문 또는 case를 확장하면 되지만 귀찮다.
+
+## 그럼 enum으로 어떻게 할 수 있는데?
+
+아마도 위에서 java8의 functional interface를 언급했는지도 궁금해 할 수도 있다. (아닐 수도 있다.)
 
 그렇다면 위에서 언급한 대표적인 9개의 functional interface중 Function은 뭐하는 넘이냐?
 
@@ -336,7 +386,6 @@ Function<T, R>
 하나의 인자와 리턴타입을 가지며 그걸 제네릭으로 지정해줄수있다. 
 이러한 이유로 타입파라미터(Type Parameter)가 2개다.
 
-
 Function<String, Integer> f = string -> Integer.parseInt(string);
 Integer result = f.apply("1");
 
@@ -344,7 +393,7 @@ Integer result = f.apply("1");
 
 위에 코드를 보면 스트링이라는 인자를 받아서 Integer형태로 바꾸는 로직이 있다.
 
-물론 이 로직은 어떻게 짜느냐에 따라 사용하기 나름이다.
+물론 이 로직은 어떤 방식으로 사용하기 나름이다.
 
 아무튼 이것을 abstract method를 통해서 호출해서 적용하게 할 수 있다.
 
@@ -421,12 +470,11 @@ LEVEL_ONE("one", gold -> BigDecimal.valueOf(0.5).multiply(gold)),
 
 ```
 
-에서 두 번째 값을 보면 일반적인 상수가 아니라 하나의 표현식임을 알 수 있다.
+에서 두 번째 값을 보면 일반적인 상수가 아니라 하나의 표현식, 즉 functional interface라는 것 알 수 있다.
 
 그러면 위에서 언급했던 Function<T, R>가 떠오를 것이다.
 
 즉 gold라는 값이 들어오면 어떤 연산을 통해서 다시 리턴하리라는 것을!
-
 
 그럼 내부 생성자를 통해서 
 
@@ -438,9 +486,13 @@ LEVEL_ONE("one", gold -> BigDecimal.valueOf(0.5).multiply(gold)),
 	}
 ```
 
-와 같이 코드를 짤 수 있다. 이것이 가능한 이유는 자바8부터 functional program이 가능하기 때문에 functional interface를 param으로 넘길 수 있다.
+와 같이 코드를 짤 수 있다. 
 
-지금은 Function에 두 인자값으로 BigDecimal을 대입했다. 보면 알겠지만 BigDecimal타입의 값을 받아서 BigDecimal타입의 값을 리턴한다는 것을 알 수 있다. expression이라고 변수명을 지었지만 실제로는 열거한 상수의 2번째 표현식을 받을 수 있게 만드는 것이다.
+지금은 Function에 두 인자값으로 BigDecimal을 대입했다. 
+
+보면 알겠지만 BigDecimal타입의 값을 받아서 BigDecimal타입의 값을 리턴한다는 것을 알 수 있다. 
+
+expression이라고 변수명을 지었지만 실제로는 열거한 상수의 2번째 functional interface를 받을 수 있게 만드는 것이다.
 
 
 ```
@@ -464,11 +516,6 @@ Function<T,R> 	|   (T) -> R 			 |  R apply(T t)
 
 
 감이 오는가??
-
-만일 감이 안온다면 자바8에 대한 공부가 필요하다고 생각하시면 된다.
-
-물론 람다표현식도 다시 한번 확인해보길 권한다.
-
 
 ```
 package io.basquiat;
@@ -516,11 +563,8 @@ P.S.
 
 예를 들면 레벨에 대한 상수 정의가 늘어난다면 기존에 방식으로는 최소 2군데서 변경점이 생기게 된다.
 
-해당 로직을 정의한 클래스 가령 사용자가 static으로 사용하기 위한 메소드들을 모아놓은 CommonUtils같은 클래스에 추가된 상수에 대한 if문 또는 case를 정의해야 하고 
-추가된 코드를 확장하기 위한 enum클래스에도 변경점이 생긴다.
+해당 로직을 정의한 클래스 가령 CommonUtils같은 클래스에 추가된 상수에 대한 if문 또는 case를 정의해야 하고 추가된 코드를 확장하기 위한 enum클래스에도 변경점이 생긴다.
 
 심한 경우 만일 필요할 때마다 저런 if문 또는 case문을 생성했다면 그 부분마다 일일히 찾아서 고쳐야 한다.
 
 하지만 저렇게 enum에 정의를 하면 enum 단 하나만 수정하면 저 로직을 쓴 다른 곳에서는 전혀 신경쓸 필요가 없다.
-
-자바를 한다면 SOLID원칙을 고민해 볼 필요가 있는 부분이다.
